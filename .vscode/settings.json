@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/3b3d0c2b-907c-489f-98fd-2d287bcd18c2/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/maze-game",
+    "appService.deploySubpath": "web-build"
+}
