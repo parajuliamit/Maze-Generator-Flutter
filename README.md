@@ -6,4 +6,4 @@
 ## [Click Here To Play](https://maze-game.azurewebsites.net/)
 
 ## Screenshots
-![Alt text](screenshot.png?raw=true "Screenshot")
+![Alt text](screenshot.PNG?raw=true "Screenshot")
