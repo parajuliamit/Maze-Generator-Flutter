@@ -158,6 +158,32 @@ class _MazeGeneratorState extends State<MazeGenerator> {
     }
   }
 
+  void _onScreenKeyEvent(String key) {
+    if (!_isCompleted || _isWin) {
+      return;
+    }
+    setState(() {
+      if (key == 'up' && !cells[_currentStep].top) {
+        _currentStep =
+            getIndex(cells[_currentStep].i - 1, cells[_currentStep].j)!;
+      } else if (key == 'down' && !cells[_currentStep].bottom) {
+        _currentStep =
+            getIndex(cells[_currentStep].i + 1, cells[_currentStep].j)!;
+      } else if (key == 'left' && !cells[_currentStep].left) {
+        _currentStep =
+            getIndex(cells[_currentStep].i, cells[_currentStep].j - 1)!;
+      } else if (key == 'right' && !cells[_currentStep].right) {
+        _currentStep =
+            getIndex(cells[_currentStep].i, cells[_currentStep].j + 1)!;
+      }
+    });
+    if (_currentStep == cells.length - 1) {
+      setState(() {
+        _isWin = true;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -167,144 +193,156 @@ class _MazeGeneratorState extends State<MazeGenerator> {
           focusNode: FocusNode(),
           onKey: _handleKeyEvent,
           child: SafeArea(
-            child: Center(
-                child: FittedBox(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: height,
-                    width: width,
-                    child: Stack(
-                      children: List.generate(
-                        cells.length,
-                        (index) => Positioned(
-                          top: cells[index].x,
-                          left: cells[index].y,
-                          child: Container(
-                              height: spacing,
-                              width: spacing,
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  right: cells[index].right
-                                      ? const BorderSide(
-                                          color: Colors.white, width: 1)
-                                      : BorderSide.none,
-                                  bottom: cells[index].bottom
-                                      ? const BorderSide(
-                                          color: Colors.white, width: 1)
-                                      : BorderSide.none,
-                                  left: cells[index].left
-                                      ? const BorderSide(
-                                          color: Colors.white, width: 1)
-                                      : BorderSide.none,
-                                  top: cells[index].top
-                                      ? const BorderSide(
-                                          color: Colors.white, width: 1)
-                                      : BorderSide.none,
+            child: Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Center(
+                  child: FittedBox(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: height,
+                      width: width,
+                      child: Stack(
+                        children: List.generate(
+                          cells.length,
+                          (index) => Positioned(
+                            top: cells[index].x,
+                            left: cells[index].y,
+                            child: Container(
+                                height: spacing,
+                                width: spacing,
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    right: cells[index].right
+                                        ? const BorderSide(
+                                            color: Colors.white, width: 1)
+                                        : BorderSide.none,
+                                    bottom: cells[index].bottom
+                                        ? const BorderSide(
+                                            color: Colors.white, width: 1)
+                                        : BorderSide.none,
+                                    left: cells[index].left
+                                        ? const BorderSide(
+                                            color: Colors.white, width: 1)
+                                        : BorderSide.none,
+                                    top: cells[index].top
+                                        ? const BorderSide(
+                                            color: Colors.white, width: 1)
+                                        : BorderSide.none,
+                                  ),
+                                  color: index == _currentStep && _isCompleted
+                                      ? Colors.blue.shade800.withOpacity(0.7)
+                                      // : cells[index].visited
+                                      //     ? Colors.purple.withOpacity(0.5)
+                                      : Colors.transparent,
                                 ),
-                                color: index == _currentStep && _isCompleted
-                                    ? Colors.blue.shade800.withOpacity(0.7)
-                                    // : cells[index].visited
-                                    //     ? Colors.purple.withOpacity(0.5)
-                                    : Colors.transparent,
-                              ),
-                              padding: const EdgeInsets.all(2),
-                              child: FittedBox(
-                                fit: BoxFit.scaleDown,
-                                child: index == 0
-                                    ? const Text(
-                                        'Start',
-                                        style: TextStyle(
-                                            color: Colors.white, fontSize: 18),
-                                      )
-                                    : index == cells.length - 1
-                                        ? const Text(
-                                            'End',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 18),
-                                          )
-                                        : null,
-                              )),
+                                padding: const EdgeInsets.all(2),
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: index == 0
+                                      ? const Text(
+                                          'Start',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 18),
+                                        )
+                                      : index == cells.length - 1
+                                          ? const Text(
+                                              'End',
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 18),
+                                            )
+                                          : null,
+                                )),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  Text(
-                    _isWin
-                        ? 'You Win !!'
-                        : _isCompleted
-                            ? 'Maze Generation Completed'
-                            : 'Generating Maze...',
-                    style: const TextStyle(color: Colors.white, fontSize: 22),
-                  ),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  _isWin
-                      ? MaterialButton(
-                          elevation: 0,
-                          color: Colors.white,
-                          onPressed: () {
-                            setState(() {
-                              reset();
-                            });
-                          },
-                          child: const Text(
-                            'Generate Another Maze',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 20),
-                          ),
-                        )
-                      : _isCompleted
-                          ? const Text(
-                              'Press arrow keys to play.',
-                              style: TextStyle(color: Colors.white),
-                            )
-                          : const SizedBox(),
-                  Visibility(
-                    visible: _isCompleted &&
-                        !_isWin &&
-                        MediaQuery.of(context).size.height >
-                            MediaQuery.of(context).size.width,
-                    child: Column(
-                      children: [
-                        const SizedBox(
-                          height: 15,
-                        ),
-                        FloatingActionButton(
-                          onPressed: () {},
-                          child: const Icon(Icons.keyboard_arrow_up),
-                        ),
-                        Row(
-                          children: [
-                            FloatingActionButton(
-                              onPressed: () {},
-                              child: const Icon(Icons.keyboard_arrow_up),
-                            ),
-                            const SizedBox(
-                              width: 50,
-                            ),
-                            FloatingActionButton(
-                              onPressed: () {},
-                              child: const Icon(Icons.keyboard_arrow_right),
-                            ),
-                          ],
-                        ),
-                        FloatingActionButton(
-                          onPressed: () {},
-                          child: const Icon(Icons.keyboard_arrow_up),
-                        ),
-                      ],
+                    const SizedBox(
+                      height: 15,
                     ),
-                  ),
-                ],
-              ),
-            )),
+                    Text(
+                      _isWin
+                          ? 'You Win !!'
+                          : _isCompleted
+                              ? 'Maze Generation Completed'
+                              : 'Generating Maze...',
+                      style: const TextStyle(color: Colors.white, fontSize: 22),
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    _isWin
+                        ? MaterialButton(
+                            elevation: 0,
+                            color: Colors.white,
+                            onPressed: () {
+                              setState(() {
+                                reset();
+                              });
+                            },
+                            child: const Text(
+                              'Generate Another Maze',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 20),
+                            ),
+                          )
+                        : _isCompleted
+                            ? const Text(
+                                'Press arrow keys to play.',
+                                style: TextStyle(color: Colors.white),
+                              )
+                            : const SizedBox(),
+                    Visibility(
+                      visible: _isCompleted &&
+                          !_isWin &&
+                          MediaQuery.of(context).size.height >
+                              MediaQuery.of(context).size.width,
+                      child: Column(
+                        children: [
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          FloatingActionButton(
+                            onPressed: () {
+                              _onScreenKeyEvent('up');
+                            },
+                            child: const Icon(Icons.keyboard_arrow_up),
+                          ),
+                          Row(
+                            children: [
+                              FloatingActionButton(
+                                onPressed: () {
+                                  _onScreenKeyEvent('left');
+                                },
+                                child: const Icon(Icons.keyboard_arrow_left),
+                              ),
+                              const SizedBox(
+                                width: 50,
+                              ),
+                              FloatingActionButton(
+                                onPressed: () {
+                                  _onScreenKeyEvent('right');
+                                },
+                                child: const Icon(Icons.keyboard_arrow_right),
+                              ),
+                            ],
+                          ),
+                          FloatingActionButton(
+                            onPressed: () {
+                              _onScreenKeyEvent('down');
+                            },
+                            child: const Icon(Icons.keyboard_arrow_down),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              )),
+            ),
           ),
         ));
   }
