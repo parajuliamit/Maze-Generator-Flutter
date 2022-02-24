@@ -151,7 +151,7 @@ class _MazeGeneratorState extends State<MazeGenerator> {
             getIndex(cells[_currentStep].i, cells[_currentStep].j + 1)!;
       }
     });
-    if (_currentStep == cells.length - 1) {
+    if (_currentStep == getIndex(0, row - 1)) {
       setState(() {
         _isWin = true;
       });
@@ -177,7 +177,7 @@ class _MazeGeneratorState extends State<MazeGenerator> {
             getIndex(cells[_currentStep].i, cells[_currentStep].j + 1)!;
       }
     });
-    if (_currentStep == cells.length - 1) {
+    if (_currentStep == getIndex(0, row - 1)) {
       setState(() {
         _isWin = true;
       });
@@ -247,7 +247,7 @@ class _MazeGeneratorState extends State<MazeGenerator> {
                                               color: Colors.white,
                                               fontSize: 18),
                                         )
-                                      : index == cells.length - 1
+                                      : index == getIndex(0, row - 1)
                                           ? const Text(
                                               'End',
                                               style: TextStyle(
